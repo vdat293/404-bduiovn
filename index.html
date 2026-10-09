@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex" />
+<title>Hệ thống đang bảo trì</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23ad171c'/%3E%3Cpath d='M16 7v4M16 21v4M7 16h4M21 16h4M10 10l3 3M19 19l3 3M22 10l-3 3M13 19l-3 3' stroke='white' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+
+<style>
+  :root {
+    --red: #ad171c;        /* đỏ chủ đạo của sv.bdu.edu.vn */
+    --red-dark: #901317;   /* đỏ đậm hơn cho hover */
+    --red-soft: #fdecec;   /* nền đỏ nhạt */
+    --line: #eccdcb;       /* viền đỏ nhạt */
+    --text: #212529;       /* chữ chính */
+    --muted: #6c757d;      /* chữ phụ */
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    min-height: 100vh;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    font-family: Roboto, "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+    color: var(--text);
+    background: #fff;
+    line-height: 1.7;
+  }
+
+  /* ---------- Khung nội dung ---------- */
+  .wrap {
+    flex: 1;
+    display: grid;
+    place-items: center;
+    padding: clamp(24px, 6vw, 64px) clamp(16px, 4vw, 40px);
+    background: linear-gradient(180deg, #fff 0%, var(--red-soft) 100%);
+  }
+
+  .card {
+    width: min(600px, 100%);
+    background: #fff;
+    border: 1px solid var(--line);
+    border-top: 4px solid var(--red);
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(173, 23, 28, 0.1);
+    padding: clamp(26px, 5vw, 44px);
+    text-align: center;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 5px 14px;
+    margin-bottom: 18px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--red-soft);
+    color: var(--red);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .badge svg { width: 15px; height: 15px; flex: none; }
+
+  .gear {
+    width: 52px;
+    height: 52px;
+    color: var(--red);
+    animation: spin 7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  h1 {
+    margin: 14px 0 16px;
+    font-size: clamp(1.35rem, 3.6vw, 1.8rem);
+    font-weight: 700;
+    color: var(--red);
+  }
+
+  p { margin: 0; color: var(--text); }
+
+  a.url {
+    color: var(--red);
+    font-weight: 500;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.95em;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    word-break: break-all;
+  }
+  a.url:hover { color: var(--red-dark); }
+
+  .actions { margin-top: 24px; }
+
+  .btn {
+    padding: 9px 20px;
+    font: inherit;
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: #fff;
+    background: var(--red);
+    border: 1px solid var(--red-dark);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+  .btn:hover { background: var(--red-dark); }
+  .btn:focus-visible { outline: 3px solid rgba(173, 23, 28, 0.35); outline-offset: 2px; }
+
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: 26px;
+    transform: translate(-50%, 14px);
+    padding: 10px 18px;
+    border-radius: 6px;
+    background: var(--red);
+    color: #fff;
+    font-size: 0.88rem;
+    font-weight: 500;
+    box-shadow: 0 8px 20px rgba(173, 23, 28, 0.35);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+  }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .gear { animation: none; }
+  }
+</style>
+</head>
+<body>
+
+<main class="wrap">
+  <section class="card">
+    <span class="badge">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M3 11v2a1 1 0 0 0 1 1h3l4 3V7L7 10H4a1 1 0 0 0-1 1Z" />
+        <path d="M15 8.5a4 4 0 0 1 0 7M18 6a7 7 0 0 1 0 12" />
+      </svg>
+      Thông báo
+    </span>
+
+    <svg class="gear" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="3.2" />
+      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+    </svg>
+
+    <h1>Hệ thống đang bảo trì</h1>
+
+    <p>
+      Nếu muốn tra cứu thông tin, vui lòng sử dụng
+      <a class="url" href="https://sv.bdu.edu.vn/public/" target="_blank" rel="noopener">https://sv.bdu.edu.vn/public/</a>
+      để tra cứu.
+    </p>
+
+    <div class="actions">
+      <button class="btn" type="button" id="copy">Sao chép liên kết</button>
+    </div>
+  </section>
+</main>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+  (function () {
+    var URL = "https://sv.bdu.edu.vn/public/";
+    var btn = document.getElementById("copy");
+    var toast = document.getElementById("toast");
+    var timer;
+
+    function say(msg) {
+      toast.textContent = msg;
+      toast.classList.add("show");
+      clearTimeout(timer);
+      timer = setTimeout(function () { toast.classList.remove("show"); }, 2600);
+    }
+
+    btn.addEventListener("click", function () {
+      function fallback() {
+        var tmp = document.createElement("input");
+        tmp.value = URL;
+        document.body.appendChild(tmp);
+        tmp.select();
+        var ok = false;
+        try { ok = document.execCommand("copy"); } catch (e) {}
+        document.body.removeChild(tmp);
+        say(ok ? "Đã sao chép liên kết." : "Không sao chép được — vui lòng copy thủ công.");
+      }
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(URL).then(
+          function () { say("Đã sao chép liên kết."); },
+          fallback
+        );
+      } else {
+        fallback();
+      }
+    });
+  })();
+</script>
+
+</body>
+</html>
